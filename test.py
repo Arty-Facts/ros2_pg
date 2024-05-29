@@ -25,8 +25,6 @@ class ScreenDisplayerNode(Node):
                 img.fill(255)
                 self.set_object(img,i,j,'white')
                 time.sleep(0.1)
-        self.set_object(img,500,500,'my_little_pony')
-
 
     def set_image(self, image):
         bg = np.array(image.resize(self.bg_size))
