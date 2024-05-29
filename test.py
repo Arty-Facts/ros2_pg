@@ -38,12 +38,11 @@ class ScreenDisplayerNode(Node):
     	if ( (x, y) >= (0, 0) ) and ( (x, y) < self.bg_size )       
             request.x = x
             request.y = y
-            request.image = self.bridge.cv2_to_imgmsg(image)
         else
             request.x = 0
             request.y = 0
             image = np.zeros((1, 1, 3), dtype=np.uint8)
-            request.image = self.bridge.cv2_to_imgmsg(image)        
+        request.image = self.bridge.cv2_to_imgmsg(image)        
         self.img_cli.call_async(request)
 
 # Main function
