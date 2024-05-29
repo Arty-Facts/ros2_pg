@@ -14,13 +14,13 @@ class ScreenDisplayerNode(Node):
         self.img_cli = self.create_client(SetScreenImage, 'screen/image')
         while not (self.bg_cli.wait_for_service(timeout_sec = 1.0) or self.img_cli.wait_for_service(timeout_sec = 1.0)):
             self.get_logger().info('Services not available, waiting...')
-        image = Image.open("logo.png")
+        image = Image.open("super_mario_world_desktop_by_tregnier2795_d27cao8-pre.jpg")
         self.set_image(image)
         img = np.zeros((100, 100, 3), dtype=np.uint8)
         self.set_object(img,500,500)
 
     def set_image(self, image):
-        bg = image.resize((5760, 1200))
+        bg = np.array(image.resize((5760, 1200)))
         request = SetScreenBackground.Request()
         request.image = self.bridge.cv2_to_imgmsg(bg)
         self.bg_cli.call_async(request)
