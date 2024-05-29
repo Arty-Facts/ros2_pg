@@ -6,6 +6,7 @@ from cv_bridge import CvBridge
 from PIL import Image
 import time
 import cv2
+import random
 
 class ScreenDisplayerNode(Node):
     def __init__(self) -> None:
@@ -21,11 +22,12 @@ class ScreenDisplayerNode(Node):
         image = cv2.imread("NEST-Background.png") 
         cloud = cv2.imread("cloud1_small.png")
         self.cloud_startx = self.bg_size[0]-100
-        self.cloud_x = self.cloud_startx
-        self.cloud_y = 400
+        self.cloud_x = [self.cloud_startx, self.cloud_startx, self.cloud_startx]
+        self.cloud_y = [300, 400, 500]
+        self.cloud_windspeed = [-10,-20,-25]
         bee  = cv2.imread("yellowjacket-left-smallest.png")
         
-        self.timer = self.create_timer(0.2, self.move_cloud)  # Timer to call move_object every 0.1 seconds
+        self.cloud_timer = self.create_timer(0.2, self.move_cloud)  # Timer to call move_object every 0.1 seconds
 
         self.set_image(image)
         for i in range(0, 5760, 100):
@@ -54,10 +56,12 @@ class ScreenDisplayerNode(Node):
 
     def move_cloud(self):
         # Move the object to the right by 10 pixels
-        self.cloud_x -= 10
-        if self.cloud_x <= 0 #self.bg_size[0]:
-            self.cloud_x = self.cloud_startx  # Reset to the left edge if it goes off the screen
-        self.set_object(self.img_cloud, self.cloud_x, self.cloud_y, 'cloud')
+        for cidx in range(0,2):
+            self.cloud_x[cidx] += self.cloud_windspeed[cidx]
+            if self.cloud_x[cidx] <= 0 #self.bg_size[0]:
+                self.cloud_x[cidx] = self.cloud_startx  # Reset to the left edge if it goes off the screen
+                self.cloud_y[cidx] = random.randint(300, 500)
+            self.set_object(self.img_cloud, self.cloud_x[cidx], self.cloud_y[cidx], 'cloud'+str(cidx))
 
 # Main function
 def main(args = None):
