@@ -5,6 +5,7 @@ from visual_lab_interfaces.srv import SetScreenBackground, SetScreenImage
 from cv_bridge import CvBridge
 from PIL import Image
 import time
+import cv2
 
 class ScreenDisplayerNode(Node):
     def __init__(self) -> None:
@@ -16,7 +17,8 @@ class ScreenDisplayerNode(Node):
         self.img_cli = self.create_client(SetScreenImage, 'screen/image')
         while not (self.bg_cli.wait_for_service(timeout_sec = 1.0) or self.img_cli.wait_for_service(timeout_sec = 1.0)):
             self.get_logger().info('Services not available, waiting...')
-        image = Image.open("super_mario_world_desktop_by_tregnier2795_d27cao8-pre.jpg")
+        # image = Image.open("NEST-Background.png").convert('BGR')
+        image = cv2.imread("NEST-Background.png") 
         self.set_image(image)
         img = np.zeros((100, 100, 3), dtype=np.uint8)
         for i in range(0, 5760, 100):
@@ -29,9 +31,8 @@ class ScreenDisplayerNode(Node):
 
 
     def set_image(self, image):
-        bg = np.array(image.resize(self.bg_size))
         request = SetScreenBackground.Request()
-        request.image = self.bridge.cv2_to_imgmsg(bg)
+        request.image = self.bridge.cv2_to_imgmsg(image)
         self.bg_cli.call_async(request)
         
     def set_object(self, image, x , y, label):            
