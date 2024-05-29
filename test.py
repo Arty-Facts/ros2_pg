@@ -17,7 +17,7 @@ class ScreenDisplayerNode(Node):
         image = Image.open("logo.png")
         self.set_image(image)
         img = np.zeros((100, 100, 3), dtype=np.uint8)
-        self.set_object(img)
+        self.set_object(img,500,500)
 
     def set_image(self, image):
         bg = image.resize((5760, 1200))
@@ -25,11 +25,11 @@ class ScreenDisplayerNode(Node):
         request.image = self.bridge.cv2_to_imgmsg(bg)
         self.bg_cli.call_async(request)
         
-    def set_object(self, image):            
+    def set_object(self, image, x ,y):            
         request = SetScreenImage.Request()
         request.id = 'my_little_square'
-        request.x = 0
-        request.y = 0
+        request.x = x
+        request.y = y
         request.image = self.bridge.cv2_to_imgmsg(image)
         self.img_cli.call_async(request)
 
