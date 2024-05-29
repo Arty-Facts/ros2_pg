@@ -6,6 +6,8 @@ from cv_bridge import CvBridge
 from PIL import Image
 import time
 import cv2
+from rclpy.qos import qos_profile_sensor_data
+from std_msgs.msg import String
 
 class ScreenDisplayerNode(Node):
     def __init__(self) -> None:
@@ -15,6 +17,10 @@ class ScreenDisplayerNode(Node):
         self.bg_cli = self.create_client(SetScreenBackground, 'screen/background')
         self.bg_size = (5760, 1200)
         self.img_cli = self.create_client(SetScreenImage, 'screen/image')
+        self.boby_sub = self.create_subscription(String, "features/body_status",
+            self.player_callback,
+            qos_profile_sensor_data
+        )
         while not (self.bg_cli.wait_for_service(timeout_sec = 1.0) or self.img_cli.wait_for_service(timeout_sec = 1.0)):
             self.get_logger().info('Services not available, waiting...')
         # image = Image.open("NEST-Background.png").convert('BGR')
@@ -60,9 +66,17 @@ class ScreenDisplayerNode(Node):
         request.image = self.bridge.cv2_to_imgmsg(image)        
         self.img_cli.call_async(request)
 
+    def player_callback(self, msg):
+        if msg.data == "jump":
+            self.bee_y -= 100
+            self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
+        elif msg.data == "duck":
+            self.bee_y += 100
+            self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
+
     def move_cloud(self):
         # Move the object to the right by 10 pixels
-        self.cloud_x -= 100
+        self.cloud_x -= 10
         if self.cloud_x <= 0: #self.bg_size[0]:
             self.cloud_x = self.cloud_startx  # Reset to the left edge if it goes off the screen
         self.set_object(self.cloud, self.cloud_x, self.cloud_y, 'cloud')
