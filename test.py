@@ -19,14 +19,14 @@ class ScreenDisplayerNode(Node):
             self.get_logger().info('Services not available, waiting...')
         # image = Image.open("NEST-Background.png").convert('BGR')
         image = cv2.imread("NEST-Background.png") 
-        
+        cload = cv2.imread("cloud1_small.png")
+        bee  = cv2.imread("yellowjacket-left-smallest.png")
+
         self.set_image(image)
-        img = np.zeros((100, 100, 3), dtype=np.uint8)
         for i in range(0, 5760, 100):
+            self.set_object(cload,i,10,'white')
             for j in range(0, 1200, 100):
-                img = np.zeros((100, 100, 3), dtype=np.uint8)
-                img.fill(255)
-                self.set_object(img,i,j,'white')
+                self.set_object(bee,100,j,'yellow')
                 time.sleep(0.1)
 
     def set_image(self, image):
@@ -37,10 +37,10 @@ class ScreenDisplayerNode(Node):
     def set_object(self, image, x , y, label):
         request = SetScreenImage.Request()
         request.id = label    
-    	if ( (x, y) >= (0, 0) ) and ( (x, y) + totuple(image.size[0:2]) < self.bg_size )       
+        if ( (x, y) >= (0, 0) ) and ( (x, y) + tuple(image.shape[0:2]) < self.bg_size ):      
             request.x = x
             request.y = y
-        else
+        else:
             request.x = 0
             request.y = 0
             image = np.zeros((1, 1, 3), dtype=np.uint8)
