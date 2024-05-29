@@ -71,10 +71,8 @@ class ScreenDisplayerNode(Node):
         print(msg.data)
         if msg.data == "jump":
             self.bee_y -= 20
-            self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
         elif msg.data == "duck":
             self.bee_y += 20
-            self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
 
     def move_cloud(self):
         # Move the object to the right by 10 pixels
