@@ -4,6 +4,7 @@ import numpy as np
 from visual_lab_interfaces.srv import SetScreenBackground, SetScreenImage
 from cv_bridge import CvBridge
 from PIL import Image
+import time
 
 class ScreenDisplayerNode(Node):
     def __init__(self) -> None:
@@ -17,7 +18,13 @@ class ScreenDisplayerNode(Node):
         image = Image.open("super_mario_world_desktop_by_tregnier2795_d27cao8-pre.jpg")
         self.set_image(image)
         img = np.zeros((100, 100, 3), dtype=np.uint8)
+        for i in range(0, 5760, 100):
+            for j in range(0, 1200, 100):
+                img = np.zeros((100, 100, 3), dtype=np.uint8)
+                img.fill(255)
+                self.set_object(img,i,j,'white')
         self.set_object(img,500,500,'my_little_pony')
+
 
     def set_image(self, image):
         bg = np.array(image.resize((5760, 1200)))
