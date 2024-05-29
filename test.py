@@ -11,6 +11,7 @@ class ScreenDisplayerNode(Node):
 
         self.bridge = CvBridge()
         self.bg_cli = self.create_client(SetScreenBackground, 'screen/background')
+        self.bg_size = (5760, 1200)
         self.img_cli = self.create_client(SetScreenImage, 'screen/image')
         while not (self.bg_cli.wait_for_service(timeout_sec = 1.0) or self.img_cli.wait_for_service(timeout_sec = 1.0)):
             self.get_logger().info('Services not available, waiting...')
@@ -20,7 +21,7 @@ class ScreenDisplayerNode(Node):
         self.set_object(img,500,500,'my_little_pony')
 
     def set_image(self, image):
-        bg = np.array(image.resize((5760, 1200)))
+        bg = np.array(image.resize(self.bg_size))
         request = SetScreenBackground.Request()
         request.image = self.bridge.cv2_to_imgmsg(bg)
         self.bg_cli.call_async(request)
