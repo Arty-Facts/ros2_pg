@@ -1,9 +1,9 @@
 import rclpy
 from rclpy.node import Node
-from rclpy.qos import qos_profile_sensor_data
-
+import numpy as np
 from visual_lab_interfaces.srv import SetScreenBackground, SetScreenImage
 from cv_bridge import CvBridge
+from PIL import Image
 
 class ScreenDisplayerNode(Node):
     def __init__(self) -> None:
@@ -14,6 +14,14 @@ class ScreenDisplayerNode(Node):
         self.img_cli = self.create_client(SetScreenImage, 'screen/image')
         while not (self.bg_cli.wait_for_service(timeout_sec = 1.0) or self.img_cli.wait_for_service(timeout_sec = 1.0)):
             self.get_logger().info('Services not available, waiting...')
+        image = Image.open("logo.png")
+        self.set_image(image)
+
+    def set_image(self, image):
+        bg = image.resize((5760, 1200))
+        request = SetScreenBackground.Request()
+        request.image = self.bridge.cv2_to_imgmsg(bg)
+        self.bg_cli.call_async(request)
 
 # Main function
 def main(args = None):
