@@ -38,16 +38,17 @@
 # notebook_password: docki
 #     
 
-base_image: osrf/ros:foxy-desktop
+base_image: osrf/ros:humble-desktop
 shm_size: 16G # shared memory size
 tag: docki_image
 system_dep:
+    - wget
     - python3
     - python3-pip
     - python3-dev
     - python3-venv
 python_dep:
-    - jupyter
+    file: ./requirements.txt
 notebook_token: docki
 notebook_password: docki
     
