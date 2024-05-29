@@ -23,14 +23,24 @@ class ScreenDisplayerNode(Node):
         self.cloud_startx = self.bg_size[0]-100
         self.cloud_x = self.cloud_startx
         self.cloud_y = 400
-        bee  = cv2.imread("yellowjacket-right-smallest.png")
+        self.bee  = cv2.imread("yellowjacket-right-smallest.png")
+        self.bee_startx = 0
+        self.bee_x = 0
+        self.bee_y = 600
+
+
         
         self.timer = self.create_timer(0.2, self.move_cloud)  # Timer to call move_object every 0.1 seconds
+        self.runner_timer = self.create_timer(0.2, self.bee_runner)
 
         self.set_image(image)
-        for i in range(0, 5760, 100):
-            self.set_object(bee,i,600,'yellow')
-            time.sleep(0.1)
+
+    def bee_runner(self):
+        self.bee_x += 100
+        if self.bee_x >= self.bg_size[0]:
+            self.bee_x = self.bee_startx
+        self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
+                
 
     def set_image(self, image):
         request = SetScreenBackground.Request()
