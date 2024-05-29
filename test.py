@@ -29,7 +29,7 @@ class ScreenDisplayerNode(Node):
 
         self.set_image(image)
         for i in range(0, 5760, 100):
-            self.set_object(cload,i,10,'white')
+            #self.set_object(cload,i,10,'white')
             for j in range(0, 1200, 100):
                 self.set_object(bee,100,j,'yellow')
                 time.sleep(0.1)
