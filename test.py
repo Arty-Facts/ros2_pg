@@ -37,7 +37,7 @@ class ScreenDisplayerNode(Node):
     def set_object(self, image, x , y, label):
         request = SetScreenImage.Request()
         request.id = label    
-        if ( (x, y) >= (0, 0) ) and ( (x, y) + tuple(image.shape[1:-1]) < self.bg_size ):      
+        if ( (x, y) >= (0, 0) ) and ( tuple([x,y]+image.shape[1:-1]) < self.bg_size ):      
             request.x = x
             request.y = y
         else:
