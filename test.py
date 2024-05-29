@@ -8,6 +8,7 @@ import time
 import cv2
 from rclpy.qos import qos_profile_sensor_data
 from std_msgs.msg import String
+import random
 
 class ScreenDisplayerNode(Node):
     def __init__(self) -> None:
@@ -17,7 +18,7 @@ class ScreenDisplayerNode(Node):
         self.bg_cli = self.create_client(SetScreenBackground, 'screen/background')
         self.bg_size = (5760, 1200)
         self.img_cli = self.create_client(SetScreenImage, 'screen/image')
-        self.boby_sub = self.create_subscription(String, "features/body_status",
+        self.boby_sub = self.create_subscription(String, "body_status",
             self.player_callback,
             qos_profile_sensor_data
         )
@@ -27,22 +28,22 @@ class ScreenDisplayerNode(Node):
         image = cv2.imread("NEST-Background.png") 
         self.cloud = cv2.imread("cloud1_small.png")
         self.cloud_startx = self.bg_size[0]-100
-        self.cloud_x = self.cloud_startx
-        self.cloud_y = 400
+        self.cloud_x = [self.cloud_startx, self.cloud_startx, self.cloud_startx]
+        self.cloud_y = [300, 400, 500]
+        self.cloud_windspeed = [-20,-50,-75]
+        
         self.bee  = cv2.imread("yellowjacket-right-smallest.png")
         self.bee_startx = 0
         self.bee_x = 0
         self.bee_y = 600
-
-
         
-        self.timer = self.create_timer(0.2, self.move_cloud)  # Timer to call move_object every 0.1 seconds
-        self.runner_timer = self.create_timer(0.2, self.bee_runner)
+        self.cloud_timer = self.create_timer(0.2, self.move_cloud)  # Timer to call move_object every 0.1 seconds
+        self.runner_timer = self.create_timer(0.1, self.bee_runner)
 
         self.set_image(image)
 
     def bee_runner(self):
-        self.bee_x += 100
+        self.bee_x += 10
         if self.bee_x >= self.bg_size[0]:
             self.bee_x = self.bee_startx
         self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
@@ -67,19 +68,23 @@ class ScreenDisplayerNode(Node):
         self.img_cli.call_async(request)
 
     def player_callback(self, msg):
+        print(msg.data)
         if msg.data == "jump":
-            self.bee_y -= 100
+            self.bee_y -= 20
             self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
         elif msg.data == "duck":
-            self.bee_y += 100
+            self.bee_y += 20
             self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
 
     def move_cloud(self):
         # Move the object to the right by 10 pixels
-        self.cloud_x -= 10
-        if self.cloud_x <= 0: #self.bg_size[0]:
-            self.cloud_x = self.cloud_startx  # Reset to the left edge if it goes off the screen
-        self.set_object(self.cloud, self.cloud_x, self.cloud_y, 'cloud')
+        for cidx in range(0,3):
+            self.cloud_x[cidx] += self.cloud_windspeed[cidx]
+            if self.cloud_x[cidx] <= 0: #self.bg_size[0]:
+                self.cloud_x[cidx] = self.cloud_startx  # Reset to the left edge if it goes off the screen
+                self.cloud_y[cidx] = random.randint(300, 500)
+            self.set_object(self.cloud, self.cloud_x[cidx], self.cloud_y[cidx], 'cloud'+str(cidx))
+
 
 # Main function
 def main(args = None):
