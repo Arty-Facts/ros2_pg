@@ -24,6 +24,7 @@ class ScreenDisplayerNode(Node):
                 img = np.zeros((100, 100, 3), dtype=np.uint8)
                 img.fill(255)
                 self.set_object(img,i,j,'white')
+                time.sleep(0.1)
         self.set_object(img,500,500,'my_little_pony')
 
 
