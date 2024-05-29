@@ -19,6 +19,7 @@ class ScreenDisplayerNode(Node):
             self.get_logger().info('Services not available, waiting...')
         # image = Image.open("NEST-Background.png").convert('BGR')
         image = cv2.imread("NEST-Background.png") 
+        
         self.set_image(image)
         img = np.zeros((100, 100, 3), dtype=np.uint8)
         for i in range(0, 5760, 100):
