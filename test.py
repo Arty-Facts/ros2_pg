@@ -17,7 +17,7 @@ class ScreenDisplayerNode(Node):
         image = Image.open("super_mario_world_desktop_by_tregnier2795_d27cao8-pre.jpg")
         self.set_image(image)
         img = np.zeros((100, 100, 3), dtype=np.uint8)
-        self.set_object(img,500,500)
+        self.set_object(img,500,500,'my_little_pony')
 
     def set_image(self, image):
         bg = np.array(image.resize((5760, 1200)))
@@ -25,9 +25,9 @@ class ScreenDisplayerNode(Node):
         request.image = self.bridge.cv2_to_imgmsg(bg)
         self.bg_cli.call_async(request)
         
-    def set_object(self, image, x ,y):            
+    def set_object(self, image, x , y, label):            
         request = SetScreenImage.Request()
-        request.id = 'my_little_square'
+        request.id = label
         request.x = x
         request.y = y
         request.image = self.bridge.cv2_to_imgmsg(image)
