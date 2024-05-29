@@ -20,7 +20,7 @@ class ScreenDisplayerNode(Node):
         # image = Image.open("NEST-Background.png").convert('BGR')
         image = cv2.imread("NEST-Background.png") 
         cload = cv2.imread("cloud1_small.png")
-        bee  = cv2.imread("yellowjacket-left-smallest.png")
+        bee  = cv2.imread("yellowjacket-right-smallest.png")
 
         self.set_image(image)
         for i in range(0, 5760, 100):
