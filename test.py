@@ -28,20 +28,23 @@ class ScreenDisplayerNode(Node):
                 img.fill(255)
                 self.set_object(img,i,j,'white')
                 time.sleep(0.1)
-        self.set_object(img,500,500,'my_little_pony')
-
 
     def set_image(self, image):
         request = SetScreenBackground.Request()
         request.image = self.bridge.cv2_to_imgmsg(image)
         self.bg_cli.call_async(request)
         
-    def set_object(self, image, x , y, label):            
+    def set_object(self, image, x , y, label):
         request = SetScreenImage.Request()
-        request.id = label
-        request.x = x
-        request.y = y
-        request.image = self.bridge.cv2_to_imgmsg(image)
+        request.id = label    
+    	if ( (x, y) >= (0, 0) ) and ( (x, y) + totuple(image.size[0:2]) < self.bg_size )       
+            request.x = x
+            request.y = y
+        else
+            request.x = 0
+            request.y = 0
+            image = np.zeros((1, 1, 3), dtype=np.uint8)
+        request.image = self.bridge.cv2_to_imgmsg(image)        
         self.img_cli.call_async(request)
 
 # Main function
