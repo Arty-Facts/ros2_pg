@@ -20,21 +20,28 @@ class ScreenDisplayerNode(Node):
             self.get_logger().info('Services not available, waiting...')
         # image = Image.open("NEST-Background.png").convert('BGR')
         image = cv2.imread("NEST-Background.png") 
-        cloud = cv2.imread("cloud1_small.png")
+        self.cloud = cv2.imread("cloud1_small.png")
         self.cloud_startx = self.bg_size[0]-100
         self.cloud_x = [self.cloud_startx, self.cloud_startx, self.cloud_startx]
         self.cloud_y = [300, 400, 500]
         self.cloud_windspeed = [-10,-20,-25]
-        bee  = cv2.imread("yellowjacket-left-smallest.png")
+        
+        self.bee  = cv2.imread("yellowjacket-right-smallest.png")
+        self.bee_startx = 0
+        self.bee_x = 0
+        self.bee_y = 600
         
         self.cloud_timer = self.create_timer(0.2, self.move_cloud)  # Timer to call move_object every 0.1 seconds
+        self.runner_timer = self.create_timer(0.2, self.bee_runner)
 
         self.set_image(image)
-        for i in range(0, 5760, 100):
-            #self.set_object(cload,i,10,'white')
-            for j in range(0, 1200, 100):
-                self.set_object(bee,100,j,'yellow')
-                time.sleep(0.1)
+
+    def bee_runner(self):
+        self.bee_x += 100
+        if self.bee_x >= self.bg_size[0]:
+            self.bee_x = self.bee_startx
+        self.set_object(self.bee, self.bee_x, self.bee_y, 'bee')
+                
 
     def set_image(self, image):
         request = SetScreenBackground.Request()
@@ -44,7 +51,7 @@ class ScreenDisplayerNode(Node):
     def set_object(self, image, x , y, label):
         request = SetScreenImage.Request()
         request.id = label    
-        if ( (x, y) >= (0, 0) ) and ( tuple([x,y]+image.shape[1:-1]) < self.bg_size ):      
+        if ( (x, y) >= (0, 0) ) and ( tuple(np.array([x,y])+image.shape[1::-1]) < self.bg_size ):      
             request.x = x
             request.y = y
         else:
@@ -62,6 +69,7 @@ class ScreenDisplayerNode(Node):
                 self.cloud_x[cidx] = self.cloud_startx  # Reset to the left edge if it goes off the screen
                 self.cloud_y[cidx] = random.randint(300, 500)
             self.set_object(self.img_cloud, self.cloud_x[cidx], self.cloud_y[cidx], 'cloud'+str(cidx))
+
 
 # Main function
 def main(args = None):
